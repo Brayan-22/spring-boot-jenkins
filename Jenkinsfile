@@ -60,13 +60,13 @@ pipeline{
         //         sh "docker compose up -d --build"
         //     }
         // }
-        post{
-            success{
-                setBuildStatus("Build Success","SUCCESS")
-            }
-            failure{
-                setBuildStatus("Build Failed","FAILURE")
-            }
+    }
+    post{
+        success{
+            setBuildStatus("Build Success","SUCCESS")
+        }
+        failure{
+            setBuildStatus("Build Failed","FAILURE")
         }
     }
 }
