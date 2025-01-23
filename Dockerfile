@@ -5,9 +5,9 @@ WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
 
-RUN mvn clean install
+RUN mvn clean package -DskipTests -Pprod
 
-FROM amazoncorretto:21-al2023-headless AS runtime
+FROM amazoncorretto:21-alpine3.18
 
 WORKDIR /app
 
