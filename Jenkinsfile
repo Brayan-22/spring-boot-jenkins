@@ -29,5 +29,4 @@ pipeline{
             setBuildStatus("Build fallido", "FAILURE")
         }
     }
-
 }
