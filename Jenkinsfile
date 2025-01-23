@@ -23,19 +23,13 @@ pipeline{
                 echo "Etapa Tests no disponible"
             }
         }
-        stage('Scanner'){
-            steps{
-                sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-            }
+    }
+    post{
+        success {
+            setBuildStatus("Build exitoso", "SUCCESS")
+        }
+        failure {
+            setBuildStatus("Build fallido", "FAILURE")
         }
     }
-
-    // post{
-    //     success {
-    //         setBuildStatus("Build exitoso", "SUCCESS")
-    //     }
-    //     failure {
-    //         setBuildStatus("Build fallido", "FAILURE")
-    //     }
-    // }
 }
