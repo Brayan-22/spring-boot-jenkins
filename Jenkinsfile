@@ -37,17 +37,17 @@ pipeline{
     agent any
     stages{
         stage('Build'){
-            step{
+            steps{
                 echo "Etapa Build no disponible"
             }
         }
         stage('Tests'){
-            step{
+            steps{
                 echo "Etapa Tests no disponible"
             }
         }
         stage('Deploy'){
-            step{
+            steps{
                 sh "docker-compose down -v"
                 sh "docker-compose up -d --build"
             }
