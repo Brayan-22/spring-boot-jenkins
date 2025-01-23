@@ -46,11 +46,11 @@ pipeline{
                 echo "Etapa Tests no disponible"
             }
         }
-        stage('Deploy'){
-            steps{
-                sh "docker compose down -v"
-                sh "docker compose up -d --build"
-            }
-        }
+        // stage('Deploy'){
+        //     steps{
+        //         sh "docker compose down -v"
+        //         sh "docker compose up -d --build"
+        //     }
+        // }
     }
 }
