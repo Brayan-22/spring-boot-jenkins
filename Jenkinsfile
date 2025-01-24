@@ -1,10 +1,7 @@
 pipeline {
-    agent none
+    agent any
     stages {
         stage('SCM') {
-            agent {
-                any
-            }
             steps {
                 // Cambiar 'my-ssh-key-id' por el ID de la credencial configurada en Jenkins
                 git credentialsId: 'Jenkins-github', url: 'git@github.com:Brayan-22/spring-boot-jenkins.git', branch: params.branch
@@ -16,9 +13,6 @@ pipeline {
             }
         }
         stage('SonarQube Quality Test') {
-            agent {
-                any
-            }
             environment {
                 scannerHome = tool 'sq1'
             }
@@ -35,9 +29,6 @@ pipeline {
             }
         }
         stage('SonarQube Quality Gate') {
-            agent {
-                any
-            }
             steps {
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
