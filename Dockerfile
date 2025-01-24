@@ -1,4 +1,4 @@
-FROM maven:3-amazoncorretto-21-alpine AS build
+FROM maven:3-amazoncorretto-17-alpine AS build
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM amazoncorretto:21-alpine3.18
+FROM amazoncorretto:17-alpine3.20
 
 WORKDIR /app
 
