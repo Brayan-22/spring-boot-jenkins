@@ -22,7 +22,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 // Ejecución del análisis estático con SonarQube
-                withSonarQubeEnv($installationName: 'sq1') {
+                withSonarQubeEnv(installationName: 'sq1') {
                     sh './mvnw clean compile org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
                 }
             }
