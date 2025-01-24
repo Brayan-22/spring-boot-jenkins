@@ -4,7 +4,7 @@ pipeline {
         stage('SCM') {
             steps {
                 // Cambiar 'my-ssh-key-id' por el ID de la credencial configurada en Jenkins
-                git credentialsId: 'Jenkins-github', url: 'git@github.com:Brayan-22/spring-boot-jenkins.git', branch: params.branch
+                git credentialsId: 'Jenkins-github', url: 'git@github.com:Brayan-22/spring-boot-jenkins.git', branch: master
                 stash name: 'source', useDefaultExcludes: false
                 script {
                     def commitSha = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
