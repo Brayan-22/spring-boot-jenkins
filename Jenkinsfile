@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('SCM') {
             agent {
-                label 'Jenkins'
+                any
             }
             steps {
                 // Cambiar 'my-ssh-key-id' por el ID de la credencial configurada en Jenkins
@@ -17,7 +17,7 @@ pipeline {
         }
         stage('SonarQube Quality Test') {
             agent {
-                label 'Jenkins'
+                any
             }
             environment {
                 scannerHome = tool 'sq1'
@@ -36,7 +36,7 @@ pipeline {
         }
         stage('SonarQube Quality Gate') {
             agent {
-                label 'Jenkins'
+                any
             }
             steps {
                 timeout(time: 1, unit: 'HOURS') {
