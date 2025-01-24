@@ -1,53 +1,65 @@
 pipeline {
-    agent any
+    agent none
     stages {
-        stage('Checkout') {
-            steps {
-                // Clonar el repositorio
-                git branch: 'master', url: 'https://github.com/Brayan-22/spring-boot-jenkins.git'
+        stage('SCM') {
+            agent {
+                label 'Jenkins'
             }
-        }
-        stage('Build') {
             steps {
-                // Compilación del proyecto usando Maven
-                sh './mvnw clean package'
-            }
-        }
-        stage('Test') {
-            steps {
-                // Ejecución de pruebas
-                sh './mvnw test'
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                // Ejecución del análisis estático con SonarQube
-                withSonarQubeEnv(installationName: 'sq1') {
-                    sh './mvnw clean compile org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                git url: 'https://github.com/Brayan-22/spring-boot-jenkins.git', branch: params.branch
+                stash name: 'source', useDefaultExcludes: false
+                script {
+                    def commitSha = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    githubNotify context: 'SCM', status: 'PENDING', description: 'SCM stage started', sha: commitSha
                 }
             }
         }
-        stage('Quality Gate') {
+        stage('SonarQube Quality Test') {
+            agent {
+                label 'Jenkins'
+            }
+            environment {
+                scannerHome = tool 'sq1'
+            }
             steps {
-                // Esperar y verificar la Quality Gate de SonarQube
-                timeout(time: 10, unit: 'MINUTES') {
+                unstash 'source'
+                withSonarQubeEnv('sq1') {
+                    sh 'mvn clean package -DskipTests'
+                    sh '${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=spring-jenkins -Dsonar.java.binaries=target'
+                }
+                script {
+                    def commitSha = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    githubNotify context: 'SonarQube Quality Test', status: 'SUCCESS', description: 'SonarQube Quality Test passed', sha: commitSha
+                }
+            }
+        }
+        stage('SonarQube Quality Gate') {
+            agent {
+                label 'Jenkins'
+            }
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
+                }
+                script {
+                    def commitSha = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    githubNotify context: 'SonarQube Quality Gate', status: 'SUCCESS', description: 'SonarQube Quality Gate passed', sha: commitSha
                 }
             }
         }
     }
     post {
-        always {
-            // Archivar los artefactos generados
-            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-        }
         failure {
-            // Notificar fallos
-            echo 'Pipeline falló. Por favor, revisa los errores.'
+            script {
+                def commitSha = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                githubNotify context: 'Pipeline', status: 'FAILURE', description: 'Pipeline failed', sha: commitSha
+            }
         }
         success {
-            // Notificar éxito
-            echo 'Pipeline ejecutado con éxito.'
+            script {
+                def commitSha = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                githubNotify context: 'Pipeline', status: 'SUCCESS', description: 'Pipeline succeeded', sha: commitSha
+            }
         }
     }
 }
